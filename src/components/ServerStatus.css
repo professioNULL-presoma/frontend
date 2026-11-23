@@ -1,0 +1,37 @@
+.server-status {
+  position: fixed;
+  bottom: var(--space-3);
+  left: var(--space-3);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px var(--space-3);
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  box-shadow: var(--shadow-2);
+  color: var(--color-grey-700);
+  pointer-events: none;
+}
+.server-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-grey-400);
+}
+.server-status--ok .server-status__dot {
+  background: var(--color-green-500);
+}
+.server-status--down .server-status__dot {
+  background: var(--color-red-500);
+}
+@media (max-width: 1023px) {
+  .server-status {
+    top: var(--space-3);
+    right: var(--space-3);
+    bottom: auto;
+    left: auto;
+  }
+}
