@@ -17,6 +17,10 @@ export default tseslint.config(
     rules: {
       ...hooks.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'error',
+      'jsx-a11y/label-has-associated-control': [
+        'error',
+        { controlComponents: ['Checkbox'], assert: 'either', depth: 3 },
+      ],
       'no-restricted-syntax': [
         'error',
         {

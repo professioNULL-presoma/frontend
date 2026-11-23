@@ -1,11 +1,38 @@
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn--xl {
+  height: 56px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-xl);
+  font-size: 17px;
+  font-weight: 700;
+}
+.btn--l {
   height: 48px;
   padding: 0 var(--space-5);
-  border: 0;
   border-radius: var(--radius-l);
-  font: inherit;
   font-weight: 600;
-  cursor: pointer;
+}
+.btn--m {
+  height: 40px;
+  padding: 0 var(--space-4) 0 14px;
+  border-radius: var(--radius-m);
+  font-size: 15px;
+  font-weight: 600;
+}
+.btn--block {
+  width: 100%;
 }
 .btn--primary {
   background: var(--color-blue-500);
@@ -18,7 +45,17 @@
   background: var(--color-blue-50);
   color: var(--color-blue-500);
 }
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
 .btn:focus-visible {
   outline: 2px solid var(--color-blue-500);
   outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
 }

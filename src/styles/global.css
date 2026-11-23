@@ -1,3 +1,8 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   font-family:
@@ -5,7 +10,29 @@ body {
     Pretendard,
     -apple-system,
     BlinkMacSystemFont,
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
     sans-serif;
   color: var(--color-grey-900);
   background: var(--color-white);
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
