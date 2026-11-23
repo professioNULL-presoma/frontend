@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  font-family:
+    'Pretendard Variable',
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  color: var(--color-grey-900);
+  background: var(--color-white);
+}

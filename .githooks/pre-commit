@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+. scripts/identity.sh
+# Identity must be exactly the allowed one (env vars can override config, so check effective values).
+an=$(git var GIT_AUTHOR_IDENT);    cn=$(git var GIT_COMMITTER_IDENT)
+for v in "$an" "$cn"; do
+  case "$v" in
+    "$ALLOWED_NAME <$ALLOWED_EMAIL>"*) ;;
+    *) echo "✗ identity '$v' is not '$ALLOWED_NAME <$ALLOWED_EMAIL>'. Run scripts/setup.sh"; exit 1;;
+  esac
+done
+[ -f package.json ] && [ -d node_modules ] && npx --no-install lint-staged
+exit 0
