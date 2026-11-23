@@ -30,6 +30,11 @@
   --color-red-600: oklch(0.626 0.216 22);
   --color-green-500: oklch(0.493 0.143 154);
   --color-navy-900: oklch(0.155 0.060 261);
+  --color-red-50: oklch(0.940 0.040 18);
+  --color-orange-50: oklch(0.955 0.040 62);
+  --color-orange-text: oklch(0.560 0.150 56);
+  --color-green-50: oklch(0.955 0.040 154);
+  --color-pc-screen-bg: oklch(0.976 0.003 265);
   --color-brown-900: oklch(0.359 0.083 39);
   --color-brown-700: oklch(0.444 0.062 30);
   --color-brown-500: oklch(0.535 0.073 39);

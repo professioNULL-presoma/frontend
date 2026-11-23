@@ -42,6 +42,13 @@ colors:
   red-600: oklch(0.626 0.216 22) # 번들 고유값, TDS red600과 다른 색: 번들 red-500과 거의 같은 색이라 가장 가까운 발행 step은 red500(ΔE 0.017)
   green-500: oklch(0.493 0.143 154) # success — 번들 고유값, TDS green500과 다른 색: 명도 0.49로 발행 green500(0.67)보다 훨씬 어둡고 가장 가까운 발행 step은 green900(ΔE 0.028)
   navy-900: oklch(0.155 0.060 261) # text-shadow base, source of overlay rgba
+  ## Badge washed tones (추정 — 정식 토큰 없음, badge 절 참고)
+  red-50: oklch(0.940 0.040 18) # red badge 배경 (추정)
+  orange-50: oklch(0.955 0.040 62) # orange badge 배경 (추정)
+  orange-text: oklch(0.560 0.150 56) # orange badge 텍스트 — orange-500은 흰/옅은 배경 대비 부족 (추정)
+  green-50: oklch(0.955 0.040 154) # green badge 배경 (추정)
+  ## PC
+  pc-screen-bg: oklch(0.976 0.003 265) # pcScreenBg — PC 화면 바탕 (라이트)
   ## Illustration warms
   brown-900: oklch(0.359 0.083 39)
   brown-700: oklch(0.444 0.062 30)
