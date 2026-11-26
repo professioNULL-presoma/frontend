@@ -73,10 +73,29 @@ src/
 - 문구는 해요체, 금액은 `1,000만원` 형식으로 씁니다.
 - 디자인 시안: 피그마 `집사 - 와이어프레임` 파일의 `화면 · toss.md` 섹션
 
-## 커밋 규칙
+## 브랜치·PR·커밋 규칙
+
+팀 공통 규칙은 [harness/CONVENTION.md](https://github.com/professioNULL-presoma/harness/blob/dev/CONVENTION.md)를 따릅니다. 요약:
+
+```
+기능 브랜치 ──(PR, Squash)──▶ dev ──(배포 PR, Merge commit)──▶ main
+```
+
+- `dev`(기본 브랜치)와 `main`은 직접 push할 수 없습니다. PR과 승인 1명이 필요합니다.
+- 이슈를 먼저 만들고, 브랜치는 `dev`에서 `<타입>/<이슈번호>-<설명>`으로 만듭니다. 예: `feat/3-history-screen`
+- PR base는 `dev`, 본문에 `Closes #번호`. 리뷰어는 채민(1순위), 예준(2순위)입니다.
+- PR 제목이 `dev`에 남는 커밋 메시지가 됩니다: `<타입>: <무엇을 했는지> (#이슈번호)`
+  - 타입: `feat` `fix` `refactor` `test` `docs` `infra` `chore` `style`
+
+```sh
+git switch dev && git pull
+git switch -c feat/3-history-screen
+git push -u origin feat/3-history-screen   # GitHub에서 base: dev 로 PR
+```
+
+### 이 레포의 git 훅
 
 - 각자 자기 git 계정(`user.name`, `user.email`)으로 커밋합니다.
-- 커밋 메시지: `feat:`, `fix:`, `chore:`, `docs:` 등 접두어 + 한국어 설명
 - AI 도구를 작성자나 공동 작성자로 적지 않습니다. `commit-msg` 훅이 AI `Co-authored-by`와 "Generated with" 줄을 자동으로 지우고, push 전 훅과 CI가 한 번 더 확인합니다. 사람 공동 작성자는 그대로 둡니다.
 - 포맷팅과 push 전 검사(`npm run check`)는 `.githooks/`가 처리합니다. 훅은 `npm install` 때 자동으로 켜집니다.
 
