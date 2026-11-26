@@ -77,7 +77,9 @@ export function UploadScreen({ onBack, onSubmit }: Props) {
   }
 
   const allAgreed = consentItems.every((c) => consent[c.key])
-  const [termsKey, setTermsKey] = useState<ConsentKey | null>(null)
+  // 보여줄 약관 순서. 체크하려면 약관을 열고 "확인"을 눌러야 하고, "모두 동의하기"는 남은 약관을 차례로 연다.
+  const [termsQueue, setTermsQueue] = useState<ConsentKey[]>([])
+  const termsKey = termsQueue[0] ?? null
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const ready = allAgreed && pages.length > 0
@@ -210,7 +212,12 @@ export function UploadScreen({ onBack, onSubmit }: Props) {
           <label className="upload__consent-row upload__consent-all">
             <Checkbox
               checked={allAgreed}
-              onChange={(e) => setConsent({ privacy: e.target.checked, image: e.target.checked })}
+              aria-haspopup="dialog"
+              onChange={(e) => {
+                if (e.target.checked)
+                  setTermsQueue(consentItems.filter((c) => !consent[c.key]).map((c) => c.key))
+                else setConsent({ privacy: false, image: false })
+              }}
             />
             <span className="t-title-2">모두 동의하기</span>
           </label>
@@ -220,7 +227,12 @@ export function UploadScreen({ onBack, onSubmit }: Props) {
               <label className="upload__consent-label">
                 <Checkbox
                   checked={consent[c.key]}
-                  onChange={(e) => setConsent((v) => ({ ...v, [c.key]: e.target.checked }))}
+                  aria-haspopup="dialog"
+                  onChange={(e) => {
+                    // 체크는 약관 확인 후에만, 해제는 바로
+                    if (e.target.checked) setTermsQueue([c.key])
+                    else setConsent((v) => ({ ...v, [c.key]: false }))
+                  }}
                 />
                 <span className="upload__consent-text">
                   <span className="t-body-2">{c.title}</span>
@@ -231,7 +243,7 @@ export function UploadScreen({ onBack, onSubmit }: Props) {
                 type="button"
                 className="upload__terms"
                 aria-label={`${c.title} 내용 보기`}
-                onClick={() => setTermsKey(c.key)}
+                onClick={() => setTermsQueue([c.key])}
               >
                 <Icon name="chevronRight" size={20} strokeWidth={2} />
               </button>
@@ -251,10 +263,11 @@ export function UploadScreen({ onBack, onSubmit }: Props) {
       </BottomCTA>
       <TermsSheet
         type={termsKey ? termsOf[termsKey] : null}
-        onClose={() => setTermsKey(null)}
+        onClose={() => setTermsQueue([])}
+        agreeLabel="확인"
         onAgree={() => {
           if (termsKey) setConsent((v) => ({ ...v, [termsKey]: true }))
-          setTermsKey(null)
+          setTermsQueue((q) => q.slice(1))
         }}
       />
     </div>

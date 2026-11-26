@@ -11,7 +11,7 @@ const fill = async (email: string) => {
 }
 
 const agree = async () => {
-  await userEvent.click(screen.getByRole('button', { name: /개인정보 수집·이용 동의 \(필수\)/ }))
+  await userEvent.click(screen.getByRole('checkbox', { name: /개인정보 수집·이용 동의/ }))
   await userEvent.click(await screen.findByRole('button', { name: '확인' }))
 }
 
@@ -62,18 +62,19 @@ describe('SignupScreen', () => {
     )
   })
 
-  it('checks consent only after reading the terms and pressing 확인', async () => {
+  it('checks consent only after 확인 in the terms sheet, unchecks right away', async () => {
     render(<SignupScreen onBack={() => {}} onSignedUp={() => {}} />)
-    expect(screen.queryByRole('checkbox')).toBeNull()
-    const row = screen.getByRole('button', {
-      name: /개인정보 수집·이용 동의 \(필수\), 내용을 보고/,
-    })
-    await userEvent.click(row)
+    const box = screen.getByRole('checkbox', { name: /개인정보 수집·이용 동의/ })
+    await userEvent.click(box)
     await screen.findByRole('dialog', { name: '개인정보 수집·이용 동의' })
+    expect(box).not.toBeChecked()
     await userEvent.click(screen.getByRole('button', { name: '닫기' }))
-    expect(screen.getByRole('button', { name: /내용을 보고 동의해 주세요/ })).toBeInTheDocument()
+    expect(box).not.toBeChecked()
     await agree()
-    expect(screen.getByRole('button', { name: /동의함/ })).toBeInTheDocument()
+    expect(box).toBeChecked()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    await userEvent.click(box)
+    expect(box).not.toBeChecked()
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 })
