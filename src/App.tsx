@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
-import { clearSession, loadSession, saveSession, type Session } from './api/auth'
+import { clearSession, loadSession, saveSession, type LoginData, type Session } from './api/auth'
 import { ContractError, uploadContract } from './api/contracts'
 import { AppShell } from './components/AppShell'
 import { ServerStatus } from './components/ServerStatus'
 import { mockAnalysisResult } from './data/analysisResult'
 import { HistoryScreen } from './screens/HistoryScreen'
 import { LoginScreen } from './screens/LoginScreen'
+import { SignupScreen } from './screens/SignupScreen'
 import { ResultScreen } from './screens/ResultScreen'
 import { UploadScreen } from './screens/UploadScreen'
 
-type Route = 'login' | 'history' | 'upload' | 'result'
+type Route = 'login' | 'signup' | 'history' | 'upload' | 'result'
 
 const routes: Record<string, Route> = {
   '#/login': 'login',
+  '#/signup': 'signup',
   '#/upload': 'upload',
   '#/result': 'result',
 }
@@ -22,7 +24,7 @@ const go = (hash: string) => {
   location.hash = hash
 }
 
-// 라우터 도입 전 임시 해시 라우팅: #/login 로그인, #/ 내역(홈), #/upload 계약서 등록, #/result 결과
+// 라우터 도입 전 임시 해시 라우팅: #/login 로그인, #/signup 회원가입, #/ 내역(홈), #/upload 계약서 등록, #/result 결과
 // 로그인하지 않았으면 어느 주소로 들어와도 로그인 화면을 보여준다.
 export function App() {
   const [route, setRoute] = useState<Route>(readRoute)
@@ -43,15 +45,20 @@ export function App() {
     setSession(null)
   }, [])
 
+  const onAuthed = (data: LoginData) => {
+    saveSession(data)
+    setSession(loadSession())
+    go('#/')
+  }
+
   const screen =
-    !session || route === 'login' ? (
+    route === 'signup' && !session ? (
+      <SignupScreen onBack={() => go('#/login')} onSignedUp={onAuthed} />
+    ) : !session || route === 'login' ? (
       <LoginScreen
         showMockHint={import.meta.env.VITE_USE_MOCK_API !== 'false'}
-        onLoggedIn={(data) => {
-          saveSession(data)
-          setSession(loadSession())
-          if (route === 'login') go('#/')
-        }}
+        onLoggedIn={onAuthed}
+        onSignup={() => go('#/signup')}
       />
     ) : route === 'upload' ? (
       <UploadScreen
@@ -70,7 +77,7 @@ export function App() {
         }}
         onBack={() => go('#/')}
       />
-    ) : route === 'history' ? (
+    ) : route === 'history' || route === 'signup' ? (
       <HistoryScreen
         accessToken={session.accessToken}
         nickname={session.nickname}

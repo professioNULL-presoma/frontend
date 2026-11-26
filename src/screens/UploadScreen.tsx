@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { BottomCTA } from '../components/BottomCTA'
 import { Checkbox } from '../components/Checkbox'
 import { Icon } from '../components/Icon'
+import { TermsSheet, type TermsType } from '../components/TermsSheet'
 import { TopBar } from '../components/TopBar'
 import './UploadScreen.css'
 
@@ -21,6 +22,12 @@ const consentItems = [
 ] as const
 type ConsentKey = (typeof consentItems)[number]['key']
 
+// 동의 항목 → 동의 문서 종류. uploads 테이블은 동의 문서를 하나만 받아서 백엔드와 정리가 필요하다.
+const termsOf: Record<ConsentKey, TermsType> = {
+  privacy: 'SIGNUP_PRIVACY',
+  image: 'CONTRACT_PROCESSING',
+}
+
 const tips = [
   '평평한 곳에 놓고 위에서 찍어요',
   '그림자·빛 반사 없이 찍어요',
@@ -31,12 +38,11 @@ type Props = {
   onBack?: () => void
   /** 실패하면 Error 를 던진다. message 가 화면에 그대로 보인다. */
   onSubmit: (files: File[]) => Promise<void> | void
-  onOpenTerms?: (key: ConsentKey) => void
 }
 
 let seq = 0
 
-export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
+export function UploadScreen({ onBack, onSubmit }: Props) {
   const [pages, setPages] = useState<Page[]>([])
   const [consent, setConsent] = useState<Record<ConsentKey, boolean>>({
     privacy: false,
@@ -71,6 +77,9 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
   }
 
   const allAgreed = consentItems.every((c) => consent[c.key])
+  // 보여줄 약관 순서. 체크하려면 약관을 열고 "확인"을 눌러야 하고, "모두 동의하기"는 남은 약관을 차례로 연다.
+  const [termsQueue, setTermsQueue] = useState<ConsentKey[]>([])
+  const termsKey = termsQueue[0] ?? null
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const ready = allAgreed && pages.length > 0
@@ -203,7 +212,12 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
           <label className="upload__consent-row upload__consent-all">
             <Checkbox
               checked={allAgreed}
-              onChange={(e) => setConsent({ privacy: e.target.checked, image: e.target.checked })}
+              aria-haspopup="dialog"
+              onChange={(e) => {
+                if (e.target.checked)
+                  setTermsQueue(consentItems.filter((c) => !consent[c.key]).map((c) => c.key))
+                else setConsent({ privacy: false, image: false })
+              }}
             />
             <span className="t-title-2">모두 동의하기</span>
           </label>
@@ -213,7 +227,12 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
               <label className="upload__consent-label">
                 <Checkbox
                   checked={consent[c.key]}
-                  onChange={(e) => setConsent((v) => ({ ...v, [c.key]: e.target.checked }))}
+                  aria-haspopup="dialog"
+                  onChange={(e) => {
+                    // 체크는 약관 확인 후에만, 해제는 바로
+                    if (e.target.checked) setTermsQueue([c.key])
+                    else setConsent((v) => ({ ...v, [c.key]: false }))
+                  }}
                 />
                 <span className="upload__consent-text">
                   <span className="t-body-2">{c.title}</span>
@@ -224,7 +243,7 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
                 type="button"
                 className="upload__terms"
                 aria-label={`${c.title} 내용 보기`}
-                onClick={() => onOpenTerms?.(c.key)}
+                onClick={() => setTermsQueue([c.key])}
               >
                 <Icon name="chevronRight" size={20} strokeWidth={2} />
               </button>
@@ -242,6 +261,15 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
       <BottomCTA info={info} disabled={!ready || submitting} busy={submitting} onClick={submit}>
         {submitting ? '올리는 중…' : '분석 시작하기'}
       </BottomCTA>
+      <TermsSheet
+        type={termsKey ? termsOf[termsKey] : null}
+        onClose={() => setTermsQueue([])}
+        agreeLabel="확인"
+        onAgree={() => {
+          if (termsKey) setConsent((v) => ({ ...v, [termsKey]: true }))
+          setTermsQueue((q) => q.slice(1))
+        }}
+      />
     </div>
   )
 }

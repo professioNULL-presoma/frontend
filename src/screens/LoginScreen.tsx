@@ -7,6 +7,7 @@ import './LoginScreen.css'
 
 type Props = {
   onLoggedIn: (data: LoginData) => void
+  onSignup?: () => void
   /** 목 응답일 때 예시 계정 안내를 보여준다 */
   showMockHint?: boolean
 }
@@ -23,7 +24,7 @@ function validate(email: string, password: string): Errors {
   return e
 }
 
-export function LoginScreen({ onLoggedIn, showMockHint = false }: Props) {
+export function LoginScreen({ onLoggedIn, onSignup, showMockHint = false }: Props) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -111,6 +112,15 @@ export function LoginScreen({ onLoggedIn, showMockHint = false }: Props) {
           <p className="login__form-error t-body-2" role="alert">
             <Icon name="warn" size={18} strokeWidth={2} />
             {errors.form}
+          </p>
+        )}
+
+        {onSignup && (
+          <p className="login__signup t-body-2">
+            아직 계정이 없나요?
+            <button type="button" className="login__signup-link t-label-m" onClick={onSignup}>
+              회원가입
+            </button>
           </p>
         )}
 
