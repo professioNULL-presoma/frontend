@@ -1,7 +1,18 @@
+# 의존성·빌드 결과
 node_modules
 dist
-.DS_Store
-*.log
+*.tsbuildinfo
+
+# 환경 변수 (예시 파일만 커밋)
 .env*
 !.env.example
-*.tsbuildinfo
+
+# 개인 도구·메모 (AI 에이전트 스킬, 작업 정리)
+.agents/
+.claude/
+skills-lock.json
+summary/
+
+# OS·로그
+.DS_Store
+*.log

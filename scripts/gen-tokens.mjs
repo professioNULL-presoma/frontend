@@ -2,7 +2,7 @@
 // `--check` fails when the committed file is stale.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 
-const src = readFileSync('toss.md', 'utf8')
+const src = readFileSync('docs/toss.md', 'utf8')
 const fm = src.split(/^---$/m)[1]
 const lines = fm.split('\n')
 const out = []

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Strip contributor/tool-attribution lines, never add any.
+# Strip AI-tool attribution lines (co-author trailers naming an AI tool, "Generated with ...").
+# Human co-authors are kept.
 set -euo pipefail
 f="$1"
-sed -i '' -E \
-  -e '/^[[:space:]]*(co-authored-by|signed-off-by):/Id' \
-  -e '/^[[:space:]]*(🤖 )?generated (with|by) /Id' "$f"
+ai='claude|anthropic|copilot|cursor|openai|chatgpt|gpt-|gemini|codex|devin'
+perl -ni -e 'print unless /^\s*co-authored-by:.*('"$ai"')/i || /^\s*(🤖 )?generated (with|by) /i' "$f"
 # drop trailing blank lines left behind
 perl -0pi -e 's/\n+\z/\n/' "$f"
 if ! grep -qE '[^[:space:]#]' "$f"; then echo "✗ empty commit message"; exit 1; fi
