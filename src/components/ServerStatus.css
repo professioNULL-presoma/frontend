@@ -28,10 +28,8 @@
   background: var(--color-red-500);
 }
 @media (max-width: 1023px) {
+  /* 상단바 버튼을 가리지 않도록 하단 버튼(bottom-cta) 위에 둔다 */
   .server-status {
-    top: var(--space-3);
-    right: var(--space-3);
-    bottom: auto;
-    left: auto;
+    bottom: calc(104px + env(safe-area-inset-bottom));
   }
 }
