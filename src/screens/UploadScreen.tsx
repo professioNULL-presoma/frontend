@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { BottomCTA } from '../components/BottomCTA'
 import { Checkbox } from '../components/Checkbox'
 import { Icon } from '../components/Icon'
+import { TermsSheet, type TermsType } from '../components/TermsSheet'
 import { TopBar } from '../components/TopBar'
 import './UploadScreen.css'
 
@@ -21,6 +22,12 @@ const consentItems = [
 ] as const
 type ConsentKey = (typeof consentItems)[number]['key']
 
+// 동의 항목 → 동의 문서 종류. uploads 테이블은 동의 문서를 하나만 받아서 백엔드와 정리가 필요하다.
+const termsOf: Record<ConsentKey, TermsType> = {
+  privacy: 'SIGNUP_PRIVACY',
+  image: 'CONTRACT_PROCESSING',
+}
+
 const tips = [
   '평평한 곳에 놓고 위에서 찍어요',
   '그림자·빛 반사 없이 찍어요',
@@ -31,12 +38,11 @@ type Props = {
   onBack?: () => void
   /** 실패하면 Error 를 던진다. message 가 화면에 그대로 보인다. */
   onSubmit: (files: File[]) => Promise<void> | void
-  onOpenTerms?: (key: ConsentKey) => void
 }
 
 let seq = 0
 
-export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
+export function UploadScreen({ onBack, onSubmit }: Props) {
   const [pages, setPages] = useState<Page[]>([])
   const [consent, setConsent] = useState<Record<ConsentKey, boolean>>({
     privacy: false,
@@ -71,6 +77,7 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
   }
 
   const allAgreed = consentItems.every((c) => consent[c.key])
+  const [termsKey, setTermsKey] = useState<ConsentKey | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const ready = allAgreed && pages.length > 0
@@ -224,7 +231,7 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
                 type="button"
                 className="upload__terms"
                 aria-label={`${c.title} 내용 보기`}
-                onClick={() => onOpenTerms?.(c.key)}
+                onClick={() => setTermsKey(c.key)}
               >
                 <Icon name="chevronRight" size={20} strokeWidth={2} />
               </button>
@@ -242,6 +249,14 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
       <BottomCTA info={info} disabled={!ready || submitting} busy={submitting} onClick={submit}>
         {submitting ? '올리는 중…' : '분석 시작하기'}
       </BottomCTA>
+      <TermsSheet
+        type={termsKey ? termsOf[termsKey] : null}
+        onClose={() => setTermsKey(null)}
+        onAgree={() => {
+          if (termsKey) setConsent((v) => ({ ...v, [termsKey]: true }))
+          setTermsKey(null)
+        }}
+      />
     </div>
   )
 }

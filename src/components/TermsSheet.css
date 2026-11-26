@@ -1,0 +1,9 @@
+.terms__muted {
+  margin: 0;
+  color: var(--color-grey-600);
+}
+.terms__content {
+  margin-top: var(--space-4);
+  color: var(--color-grey-800);
+  white-space: pre-wrap;
+}
