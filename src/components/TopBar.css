@@ -30,3 +30,7 @@
 .topbar__back:focus-visible {
   outline: 2px solid var(--color-blue-500);
 }
+
+.topbar__action {
+  margin-left: auto;
+}
