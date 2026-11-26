@@ -8,8 +8,8 @@ Stack: React + TypeScript (strict) + Vite + Vitest + Testing Library. Package ma
 
 ## Design system
 
-- `toss.md` (TDS) is the design source of truth. Read its Do's and Don'ts and the relevant component section before building UI.
-- `src/styles/tokens.css` is generated from the `toss.md` frontmatter. Never edit it. Run `npm run tokens` after changing `toss.md`.
+- `docs/toss.md` (TDS) is the design source of truth. Read its Do's and Don'ts and the relevant component section before building UI.
+- `src/styles/tokens.css` is generated from the `toss.md` frontmatter. Never edit it. Run `npm run tokens` after changing `docs/toss.md`.
 - Use `var(--color-*)`, `var(--space-*)`, `var(--radius-*)`, `var(--shadow-*)`. No raw hex, `rgb()`, or `oklch()` outside `tokens.css` (enforced by `npm run check:design`).
 - Typography follows the `typography` ramp in `toss.md` (Pretendard).
 

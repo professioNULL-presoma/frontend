@@ -3,21 +3,21 @@ on:
   push:
   pull_request:
 jobs:
-  authors:
+  attribution:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - name: Only the owner may be author/committer
+      - name: No AI tool attribution
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            scripts/check-authors.sh "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+            scripts/check-attribution.sh "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
           else
             before="${{ github.event.before }}"
             if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
-              scripts/check-authors.sh "${{ github.sha }}"
+              scripts/check-attribution.sh "${{ github.sha }}"
             else
-              scripts/check-authors.sh "$before..${{ github.sha }}"
+              scripts/check-attribution.sh "$before..${{ github.sha }}"
             fi
           fi
   frontend:

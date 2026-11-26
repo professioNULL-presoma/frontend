@@ -1,8 +1,5 @@
 dist
 node_modules
 package-lock.json
-toss.md
-.agents
-.claude
-skills-lock.json
+docs/toss.md
 src/styles/tokens.css

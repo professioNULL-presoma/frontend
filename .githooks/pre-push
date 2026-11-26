@@ -6,6 +6,6 @@ while read -r _ local_sha _ remote_sha; do
   [ "$local_sha" = "$zero" ] && continue
   if [ "$remote_sha" = "$zero" ]; then range=("$local_sha" --not --remotes)
   else range=("$remote_sha..$local_sha"); fi
-  scripts/check-authors.sh "${range[@]}" || { echo "Push blocked: fix authorship (git rebase --exec / filter-repo)."; exit 1; }
+  scripts/check-attribution.sh "${range[@]}" || { echo "Push blocked: remove AI attribution (git commit --amend / rebase)."; exit 1; }
 done
 if [ -f package.json ] && [ -d node_modules ]; then npm run --silent check; fi
