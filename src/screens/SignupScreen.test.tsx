@@ -10,6 +10,11 @@ const fill = async (email: string) => {
   await userEvent.type(screen.getByLabelText('닉네임'), '새내기')
 }
 
+const agree = async () => {
+  await userEvent.click(screen.getByRole('button', { name: /개인정보 수집·이용 동의 \(필수\)/ }))
+  await userEvent.click(await screen.findByRole('button', { name: '확인' }))
+}
+
 describe('validateSignup', () => {
   it('checks every field', () => {
     expect(
@@ -37,7 +42,7 @@ describe('SignupScreen', () => {
     await fill('new@jipsa.kr')
     await userEvent.click(screen.getByRole('button', { name: '가입하기' }))
     expect(screen.getByText('필수 동의에 체크해 주세요')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('checkbox', { name: /개인정보 수집·이용 동의/ }))
+    await agree()
     await userEvent.click(screen.getByRole('button', { name: '가입하기' }))
     await vi.waitFor(() => expect(onSignedUp).toHaveBeenCalledOnce(), { timeout: 3000 })
     expect(onSignedUp.mock.calls[0]?.[0]).toMatchObject({ user: { nickname: '새내기' } })
@@ -46,7 +51,7 @@ describe('SignupScreen', () => {
   it('shows the duplicate email error on the email field', async () => {
     render(<SignupScreen onBack={() => {}} onSignedUp={() => {}} />)
     await fill(MOCK_ACCOUNT.email)
-    await userEvent.click(screen.getByRole('checkbox', { name: /개인정보 수집·이용 동의/ }))
+    await agree()
     await userEvent.click(screen.getByRole('button', { name: '가입하기' }))
     await vi.waitFor(
       () =>
@@ -57,11 +62,18 @@ describe('SignupScreen', () => {
     )
   })
 
-  it('agrees from the terms sheet', async () => {
+  it('checks consent only after reading the terms and pressing 확인', async () => {
     render(<SignupScreen onBack={() => {}} onSignedUp={() => {}} />)
-    await userEvent.click(screen.getByRole('button', { name: '개인정보 수집·이용 동의 내용 보기' }))
-    await userEvent.click(await screen.findByRole('button', { name: '동의하기' }))
-    expect(screen.getByRole('checkbox', { name: /개인정보 수집·이용 동의/ })).toBeChecked()
+    expect(screen.queryByRole('checkbox')).toBeNull()
+    const row = screen.getByRole('button', {
+      name: /개인정보 수집·이용 동의 \(필수\), 내용을 보고/,
+    })
+    await userEvent.click(row)
+    await screen.findByRole('dialog', { name: '개인정보 수집·이용 동의' })
+    await userEvent.click(screen.getByRole('button', { name: '닫기' }))
+    expect(screen.getByRole('button', { name: /내용을 보고 동의해 주세요/ })).toBeInTheDocument()
+    await agree()
+    expect(screen.getByRole('button', { name: /동의함/ })).toBeInTheDocument()
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 })

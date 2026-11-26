@@ -2,7 +2,6 @@ import { useState, type FormEvent } from 'react'
 import { AuthError, signup, type LoginData } from '../api/auth'
 import { getConsentDocument } from '../api/consents'
 import { BottomCTA } from '../components/BottomCTA'
-import { Checkbox } from '../components/Checkbox'
 import { Icon } from '../components/Icon'
 import { TermsSheet } from '../components/TermsSheet'
 import { TextField } from '../components/TextField'
@@ -139,27 +138,25 @@ export function SignupScreen({ onBack, onSignedUp }: Props) {
           />
         </div>
 
-        <div className={`signup__consent${errors.consent ? ' signup__consent--error' : ''}`}>
-          <label className="signup__consent-label">
-            <Checkbox
-              checked={consent}
-              aria-describedby={errors.consent ? 'signup-consent-error' : undefined}
-              onChange={(e) => {
-                setConsent(e.target.checked)
-                if (errors.consent) setErrors((v) => ({ ...v, consent: undefined }))
-              }}
-            />
-            <span className="t-body-2">개인정보 수집·이용 동의 (필수)</span>
-          </label>
-          <button
-            type="button"
-            className="signup__terms"
-            aria-label="개인정보 수집·이용 동의 내용 보기"
-            onClick={() => setTermsOpen(true)}
+        {/* 체크박스를 바로 누를 수 없게 하고, 내용을 열어 "확인"을 눌러야 동의되게 한다 */}
+        <button
+          type="button"
+          className={`signup__consent${errors.consent ? ' signup__consent--error' : ''}`}
+          aria-describedby={errors.consent ? 'signup-consent-error' : undefined}
+          onClick={() => setTermsOpen(true)}
+        >
+          <span
+            className={`signup__check${consent ? ' signup__check--on' : ''}`}
+            aria-hidden="true"
           >
-            <Icon name="chevronRight" size={20} strokeWidth={2} />
-          </button>
-        </div>
+            <Icon name="check" size={16} strokeWidth={2.5} />
+          </span>
+          <span className="signup__consent-text t-body-2">
+            개인정보 수집·이용 동의 (필수)
+            <span className="sr-only">{consent ? ', 동의함' : ', 내용을 보고 동의해 주세요'}</span>
+          </span>
+          <Icon name="chevronRight" size={20} strokeWidth={2} />
+        </button>
         {errors.consent && (
           <p id="signup-consent-error" className="t-body-3 signup__error">
             {errors.consent}
@@ -181,6 +178,7 @@ export function SignupScreen({ onBack, onSignedUp }: Props) {
       <TermsSheet
         type={termsOpen ? 'SIGNUP_PRIVACY' : null}
         onClose={() => setTermsOpen(false)}
+        agreeLabel="확인"
         onAgree={() => {
           setConsent(true)
           setErrors((v) => ({ ...v, consent: undefined }))

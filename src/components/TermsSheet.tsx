@@ -12,6 +12,8 @@ type Props = {
   onClose: () => void
   /** 넘기면 하단에 "동의하기" 버튼이 생긴다 */
   onAgree?: (doc: ConsentDocument) => void
+  /** 동의 버튼 문구 (기본 "동의하기") */
+  agreeLabel?: string
 }
 
 type State = { kind: 'loading' } | { kind: 'error' } | { kind: 'ready'; doc: ConsentDocument }
@@ -19,7 +21,7 @@ type State = { kind: 'loading' } | { kind: 'error' } | { kind: 'ready'; doc: Con
 const dateFmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' })
 
 /** 동의 문서(consent_documents) 내용을 바텀시트로 보여준다. */
-export function TermsSheet({ type, onClose, onAgree }: Props) {
+export function TermsSheet({ type, onClose, onAgree, agreeLabel = '동의하기' }: Props) {
   const [state, setState] = useState<State>({ kind: 'loading' })
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export function TermsSheet({ type, onClose, onAgree }: Props) {
       footer={
         onAgree && state.kind === 'ready' ? (
           <Button size="xl" block onClick={() => onAgree(state.doc)}>
-            동의하기
+            {agreeLabel}
           </Button>
         ) : undefined
       }
