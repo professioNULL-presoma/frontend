@@ -29,7 +29,8 @@ const tips = [
 
 type Props = {
   onBack?: () => void
-  onSubmit: (files: File[]) => void
+  /** 실패하면 Error 를 던진다. message 가 화면에 그대로 보인다. */
+  onSubmit: (files: File[]) => Promise<void> | void
   onOpenTerms?: (key: ConsentKey) => void
 }
 
@@ -70,7 +71,25 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
   }
 
   const allAgreed = consentItems.every((c) => consent[c.key])
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const ready = allAgreed && pages.length > 0
+
+  const submit = async () => {
+    if (!ready || submitting) return
+    setSubmitting(true)
+    setSubmitError(null)
+    try {
+      await onSubmit(pages.map((p) => p.file))
+    } catch (e) {
+      setSubmitError(
+        e instanceof Error && e.message
+          ? e.message
+          : '업로드하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      )
+      setSubmitting(false)
+    }
+  }
   const info = !allAgreed
     ? '필수 항목에 모두 동의하면 버튼이 켜져요'
     : pages.length === 0
@@ -214,8 +233,14 @@ export function UploadScreen({ onBack, onSubmit, onOpenTerms }: Props) {
         </fieldset>
       </div>
 
-      <BottomCTA info={info} disabled={!ready} onClick={() => onSubmit(pages.map((p) => p.file))}>
-        분석 시작하기
+      {submitError && (
+        <p className="upload__error t-body-2" role="alert">
+          <Icon name="warn" size={18} strokeWidth={2} />
+          {submitError}
+        </p>
+      )}
+      <BottomCTA info={info} disabled={!ready || submitting} busy={submitting} onClick={submit}>
+        {submitting ? '올리는 중…' : '분석 시작하기'}
       </BottomCTA>
     </div>
   )

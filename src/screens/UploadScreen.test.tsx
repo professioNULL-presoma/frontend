@@ -40,4 +40,17 @@ describe('UploadScreen', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: /계약서 이미지 처리 동의/ }))
     expect(screen.getByRole('checkbox', { name: '모두 동의하기' })).not.toBeChecked()
   })
+
+  it('shows uploading state and the error message when the upload fails', async () => {
+    let reject: (e: Error) => void = () => {}
+    const onSubmit = vi.fn(() => new Promise<void>((_, r) => (reject = r)))
+    render(<UploadScreen onSubmit={onSubmit} />)
+    await userEvent.click(screen.getByRole('checkbox', { name: '모두 동의하기' }))
+    await userEvent.upload(screen.getByTestId('file-input'), pdf())
+    await userEvent.click(screen.getByRole('button', { name: '분석 시작하기' }))
+    expect(screen.getByRole('button', { name: '올리는 중…' })).toBeDisabled()
+    reject(new Error('파일이 너무 커요. 20MB 이하로 올려주세요.'))
+    expect(await screen.findByRole('alert')).toHaveTextContent('파일이 너무 커요')
+    expect(screen.getByRole('button', { name: '분석 시작하기' })).toBeEnabled()
+  })
 })

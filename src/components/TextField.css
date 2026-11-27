@@ -1,0 +1,56 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.field__label {
+  color: var(--color-grey-700);
+}
+.field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.field__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--radius-m);
+  outline: none;
+  background: var(--color-grey-100);
+  color: var(--color-grey-900);
+  font: inherit;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.field__control:has(.field__trailing) .field__input {
+  padding-right: 52px;
+}
+.field__input::placeholder {
+  color: var(--color-grey-400);
+}
+.field__input:focus {
+  border-color: var(--color-blue-500);
+  background: var(--color-white);
+  box-shadow: 0 0 0 0.5px var(--color-blue-500);
+}
+.field--error .field__input {
+  border-color: var(--color-red-500);
+  box-shadow: 0 0 0 0.5px var(--color-red-500);
+}
+.field__trailing {
+  position: absolute;
+  right: 2px;
+  display: flex;
+}
+.field__error {
+  margin: 0;
+  color: var(--color-red-500);
+}
+@media (prefers-reduced-motion: reduce) {
+  .field__input {
+    transition: none;
+  }
+}
